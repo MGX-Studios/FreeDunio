@@ -1,2 +1,2 @@
-# FreeDunio
-Library for sending and receiving Tracking data with FreeD protocol of atmega, esp32 and similar devices in Virtual Production applications.
+# FreeD
+FreeD Library for ESP32, ESP8266 and ATmega328P.
