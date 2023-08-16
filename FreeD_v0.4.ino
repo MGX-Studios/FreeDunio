@@ -3,8 +3,8 @@
 
 WiFiUDP udp;
 
-const char* ssid = "MGX";
-const char* password = "MGS444TD";
+const char* ssid = "xxxxx";
+const char* password = "xxxx";
 
 int udpPort = 8266;
 
