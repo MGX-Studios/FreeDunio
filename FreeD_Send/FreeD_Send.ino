@@ -4,8 +4,8 @@
 #include <SPI.h>
 #include "FreeD.h"
 
-const char* ssid = "MGX";
-const char* password = "MGS444TD";
+const char* ssid = "xxxx";
+const char* password = "xxxx";
 int udpPort = 7005;
 
 FreeD freeD(ssid, password, udpPort);
