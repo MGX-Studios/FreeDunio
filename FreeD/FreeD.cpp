@@ -1,20 +1,17 @@
+//Work in Progress
+
 #include "FreeD.h"
 
-FreeD::FreeD(const char* ssid, const char* password, int udpPort) : _ssid(ssid), _password(password), _udpPort(udpPort) {}
+FreeD::FreeD(byte mac[], IPAddress ip, IPAddress gateway, IPAddress subnet, unsigned int udpPort) : _ip(ip), _gateway(gateway), _subnet(subnet), _udpPort(udpPort) {
+    memcpy(_mac, mac, sizeof(_mac));
+}
 
 void FreeD::begin() {
     Serial.begin(115200);
-    WiFi.begin(_ssid, _password);
 
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
+    Ethernet.begin(_mac, _ip, _gateway, _subnet);
+    Serial.print("Local IP: ");
+    Serial.println(Ethernet.localIP());
 
     while (!_udp.begin(_udpPort)) {
         delay(250);
@@ -48,8 +45,6 @@ void FreeD::sendPacket(float rotation[3], float location[3], int zoom, int focus
     _udp.endPacket();
 }
 
-
-
 void FreeD::parsePacket() {
     int packetSize = _udp.parsePacket();
     if (packetSize) {
@@ -63,9 +58,6 @@ void FreeD::parsePacket() {
         }
     }
 }
-
-
-
 
 void FreeD::decodePacket(unsigned char* packet, int len) {
     if (packet[0] == 0xD1) {
@@ -95,102 +87,4 @@ void FreeD::decodePacket(unsigned char* packet, int len) {
         Serial.println(focus);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void FreeD::receivePacket() {
-    int packetSize = _udp.parsePacket();
-    if (packetSize) {
-        _udp.read(_buf, packetSize);
-        if (_buf[0] == 0xD1 && _buf[1] == ID) { // check if the received packet is a valid FreeD packet
-            Serial.print("Rotation (x, y, z): ");
-            Serial.print(unpack_be24_15(_buf + 2));
-            Serial.print(", ");
-            Serial.print(unpack_be24_15(_buf + 5));
-            Serial.print(", ");
-            Serial.println(unpack_be24_15(_buf + 8));
-            Serial.print("Location (x, y, z): ");
-            Serial.print(unpack_be24_6(_buf + 11));
-            Serial.print(", ");
-            Serial.print(unpack_be24_6(_buf + 14));
-            Serial.print(", ");
-            Serial.println(unpack_be24_6(_buf + 17));
-            Serial.print("Zoom: ");
-            Serial.println(unpack_be24(_buf + 20));
-            Serial.print("Focus: ");
-            Serial.println(unpack_be24(_buf + 23));
-        }
-    }
-}
-
-void FreeD::pack_be24(unsigned char* buf, long r) {
-    buf[2] = r & 0x00FF;
-    r >>= 8;
-    buf[1] = r & 0x00FF;
-    r >>= 8;
-    buf[0] = r & 0x00FF;
-}
-
-void FreeD::pack_be24_15(unsigned char* buf, double d) {
-    pack_be24(buf, d * 32768.0);
-}
-
-void FreeD::pack_be24_6(unsigned char* buf, double d) {
-    pack_be24(buf, d * 64.0);
-}
-
-void FreeD::check_sum() {
-    _buf[28] = 0x40;
-    for (int i = 0; i < 28; i++) {
-        _buf[28] = _buf[28] - _buf[i];
-    }
-}
-
-
-
-//unpacks
-
-
-
-
-long FreeD::unpack_be24(unsigned char* buf) {
-    long value = 0;
-    value |= buf[0] << 16;
-    value |= buf[1] << 8;
-    value |= buf[2];
-    return value;
-}
-
-double FreeD::unpack_be24_6(unsigned char* buf) {
-    long r = unpack_be24(buf);
-    if (r & 0x00800000) {
-        r |= 0xFF000000;
-    }
-    return r / 64.0;
-}
-
-double FreeD::unpack_be24_15(unsigned char* buf) {
-    long r = unpack_be24(buf);
-    if (r & 0x00800000) {
-        r |= 0xFF000000;
-    }
-    return r / 32768.0;
-}
-
-
-
-
 
