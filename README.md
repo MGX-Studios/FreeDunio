@@ -85,6 +85,6 @@ This library is licensed under the license. For more information, please refer t
 
 ## **Contribution**
 
-Thank you to Andrey Shtanev and @stvmyr for their contribution.
+Thank you to Andrey Shtanev and @stvmyr https://github.com/stvmyr for their contribution. also detailed information on how free-D is working. https://github.com/stvmyr/freeD
 
 If you would like to contribute to this library, please visit our GitHub page and submit a "pull request".
