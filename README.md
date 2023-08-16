@@ -85,4 +85,6 @@ This library is licensed under the license. For more information, please refer t
 
 ## **Contribution**
 
+Thank you to Andrey Shtanev and @stvmyr for their contribution.
+
 If you would like to contribute to this library, please visit our GitHub page and submit a "pull request".
